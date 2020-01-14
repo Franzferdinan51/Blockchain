@@ -4,6 +4,14 @@ import requests
 import sys
 import json
 
+from time import time
+
+
+def time_elapsed(start, end):
+    hours, rem = divmod(end - start, 3600)
+    minutes, seconds = divmod(rem, 60)
+    return "{:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds)
+
 
 def proof_of_work(block, difficulty):
     """
@@ -53,6 +61,8 @@ if __name__ == '__main__':
     print("ID is", id)
     f.close()
 
+    start_time = time()
+    prev_time = start_time
     coins_mined = 0
     # Run forever until interrupted
     while True:
@@ -72,13 +82,25 @@ if __name__ == '__main__':
         # When found, POST it to the server {"proof": new_proof, "id": id}
         post_data = {"proof": new_proof, "id": id}
 
-        r = requests.post(url=node + "/mine", json=post_data)
-        data = r.json()
-
-        # If the server responds with a 'message' 'New Block Forged'
-        # add 1 to the number of coins mined and print it.  Otherwise,
+        # If the server responds with success,
+        # add 1 to the number of coins mined and print it. Otherwise,
         # print the message from the server.
+        r = requests.post(url=node + "/mine", json=post_data)
+        try:
+            data = r.json()
+        except ValueError:
+            print("Error:  Non-json response")
+            print("Response returned:")
+            print(r)
+            break
 
+        cur_time = time()
         if data['success']:
             coins_mined += 1
-        print(f"{data['message']}\nCoins mined: {coins_mined}\n")
+            print(f"{data['message']}\nTotal coins mined: {coins_mined}")
+            print(f" Last mining time: {time_elapsed(prev_time, cur_time)}")
+            print(
+                f"  Avg mining time: {time_elapsed(start_time, start_time + (cur_time - start_time) / coins_mined)}")
+            print(f"Total mining time: {time_elapsed(start_time, cur_time)}\n")
+
+        prev_time = cur_time
