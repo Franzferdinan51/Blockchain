@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { withRouter, Route, Switch } from 'react-router-dom';
+
+import Users from './components/Users';
+
 import { PageHeader, Pagination } from 'antd';
 import 'antd/dist/antd.css';
-import './App.css';
 
 const App = (props) => {
-	const [ users, setUsers ] = useState([]);
+	const [ isLoaded, setIsLoaded ] = useState(true);
+	const [ users, setUsers ] = useState([ 'bob', 'erin', 'alice' ]);
 
-	useEffect(() => {
-		return null;
-	}, []);
+	// useEffect(
+	// 	() => {
+	// 		setUser(props.match.params.id);
+	// 	},
+	// 	[ props.match.params.id ]
+	// );
 
 	return (
 		<div className='App'>
@@ -31,7 +37,7 @@ const App = (props) => {
 							}}
 							onBack={() => props.history.push('/')}
 							title='LambdaWallet'
-							subTitle={props.match.params.id || null}
+							subTitle={<Users user={props.match.params.id} users={users} isLoaded={isLoaded} />}
 						/>
 					)}
 				/>
