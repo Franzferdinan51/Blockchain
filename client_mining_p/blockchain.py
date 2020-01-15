@@ -140,6 +140,10 @@ def mine():
     if 'proof' in data and 'id' in data:
         success = blockchain.valid_proof(
             json.dumps(blockchain.last_block, sort_keys=True), str(data['proof']))
+        if success:
+            # Forge the new Block by adding it to the chain with the proof
+            previous_hash = blockchain.hash(blockchain.last_block)
+            new_block = blockchain.new_block(data['proof'], previous_hash)
         response = {
             'success': success,
             'message': 'New Block Forged' if success else 'Proof not accepted'
