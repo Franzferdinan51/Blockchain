@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { withRouter, Route, Switch, useParams } from 'react-router-dom';
+import { withRouter, Route, Switch } from 'react-router-dom';
 import { PageHeader, Pagination } from 'antd';
 import 'antd/dist/antd.css';
 import './App.css';

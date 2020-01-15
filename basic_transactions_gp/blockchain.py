@@ -6,7 +6,7 @@ from uuid import uuid4
 from flask import Flask, jsonify, request
 
 # Current difficulty
-DIFFICULTY = 5
+DIFFICULTY = 6
 # 1 coin for difficulty 6, increasing with difficulty
 REWARD = DIFFICULTY ** 3 / 216.0
 
@@ -63,7 +63,8 @@ class Blockchain(object):
         self.current_transactions.append({
             'sender': sender,
             'recipient': recipient,
-            'amount': amount
+            'amount': amount,
+            'timestamp': time()
         })
 
         return len(self.chain) + 1
