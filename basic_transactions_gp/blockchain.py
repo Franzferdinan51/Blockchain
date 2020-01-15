@@ -6,7 +6,7 @@ from uuid import uuid4
 from flask import Flask, jsonify, request
 
 # Current difficulty
-DIFFICULTY = 4
+DIFFICULTY = 5
 # 1 coin for difficulty 6, increasing with difficulty
 REWARD = DIFFICULTY ** 3 / 216.0
 
@@ -152,13 +152,37 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 
+def validate_params(required, received):
+    return received and set(received).issuperset(set(required))
+
+
+@app.route('/chain', methods=['GET'])
+def full_chain():
+    response = {
+        # Return the chain and its current length
+        'length': len(blockchain.chain),
+        'chain': blockchain.chain
+    }
+    return jsonify(response), 200
+
+
+@app.route('/last_block', methods=['GET'])
+def last_block():
+    response = {
+        # Return the last block mined and current difficulty
+        'block': blockchain.chain[len(blockchain.chain) - 1],
+        'difficulty': DIFFICULTY
+    }
+    return jsonify(response), 200
+
+
 @app.route('/mine', methods=['POST'])
 def mine():
     # Extract data from the request body
     data = request.get_json()
 
     # If proof and id parameters received, validate proof and return success or failure
-    if 'proof' in data and 'id' in data:
+    if validate_params(['id', 'proof'], data):
         success = blockchain.valid_proof(
             json.dumps(blockchain.last_block, sort_keys=True), str(data['proof']))
         if success:
@@ -186,24 +210,28 @@ def mine():
     return jsonify(response), status
 
 
-@app.route('/chain', methods=['GET'])
-def full_chain():
-    response = {
-        # Return the chain and its current length
-        'length': len(blockchain.chain),
-        'chain': blockchain.chain
-    }
-    return jsonify(response), 200
+@app.route('/transactions/new', methods=['POST'])
+def new_transaction():
+    # Extract data from the request body
+    data = request.get_json()
 
+    if validate_params(['sender', 'recipient', 'amount'], data):
+        blockchain.new_transaction(
+            data['sender'], data['recipient'], data['amount'])
+        response = {
+            'success': True,
+            'message': blockchain.last_block['index'] + 1
+        }
+        status = 200
+    else:
+        response = {
+            'success': False,
+            'message': 'Parameters "sender", "recipient" and "amount" are required'
+        }
+        status = 400
 
-@app.route('/last_block', methods=['GET'])
-def last_block():
-    response = {
-        # Return the last block mined and current difficulty
-        'block': blockchain.chain[len(blockchain.chain) - 1],
-        'difficulty': DIFFICULTY
-    }
-    return jsonify(response), 200
+    # Send a JSON response
+    return jsonify(response), status
 
 
 # Run the program on port 5000
