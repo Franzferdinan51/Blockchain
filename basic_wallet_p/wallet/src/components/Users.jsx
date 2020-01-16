@@ -37,7 +37,7 @@ const Users = (props) => {
 			if (user) {
 				setSelected(user);
 			} else if (users.length !== 0) {
-				setSelected(users[0]);
+				setSelected('Choose a user');
 			} else if (isLoaded && !users.length) {
 				setSelected('No users found');
 			}
@@ -59,7 +59,7 @@ const Users = (props) => {
 
 	return (
 		<div>
-			{users.length > 1 ? (
+			{users.length ? (
 				<Dropdown overlay={menu}>
 					<a>
 						{selected} <Icon type='down' />

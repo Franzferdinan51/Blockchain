@@ -20,32 +20,45 @@ const Ledger = ({ transactions }) => {
 		[ user, userTransactions ]
 	);
 
-	console.log(balance);
-
 	return (
 		<div className='Ledger'>
-			{userTransactions.length ? (
+			{user && userTransactions.length ? (
 				<div>
 					<h1>Ledger for {user}</h1>
 					<h2>Balance: {balance} LC</h2>
 					<div className='transactions'>
 						{userTransactions.reverse().map(({ amount, recipient, sender, timestamp }) => {
-							const direction = recipient === user ? 'receiver' : 'sender';
 							return (
-								<div className={`line-item ${direction}`}>
+								<div className='line-item'>
 									<div className='field'>
-										<Moment fromNow>{timestamp * 1000}</Moment>
+										<strong>
+											<Moment fromNow>{timestamp * 1000}</Moment>
+										</strong>
 									</div>
-									<div className='field'>Sender: {sender}</div>
-									<div className='field'>Recipient: {recipient}</div>
-									<div className='field'>Amount: {amount}</div>
+									<div className='field'>
+										<strong>From:</strong> {sender}
+									</div>
+									<div className='field'>
+										<strong>To:</strong> {recipient}
+									</div>
+									{recipient === user ? (
+										<div className='field receiver'>
+											<strong>Amount:</strong> +{amount}
+										</div>
+									) : (
+										<div className='field sender'>
+											<strong>Amount:</strong> -{amount}
+										</div>
+									)}
 								</div>
 							);
 						})}
 					</div>
 				</div>
 			) : (
-				<div>No transactions found</div>
+				<div>
+					<h1>No transactions found</h1>
+				</div>
 			)}
 		</div>
 	);
