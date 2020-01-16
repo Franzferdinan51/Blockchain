@@ -107,11 +107,17 @@ if __name__ == '__main__':
             print(
                 "\u001b[1D" * 10, end="")
             # Output current stats
+
             print(
-                f"{data['message']}\nTotal coins mined: {coins_mined}")
-            print(f" Last mining time: {time_elapsed(prev_time, cur_time)}")
+                f"{data['message']}")
+
+            print(f"  Last mining time: {time_elapsed(prev_time, cur_time)}")
             print(
-                f"  Avg mining time: {time_elapsed(start_time, start_time + (cur_time - start_time) / coins_mined)}")
-            print(f"Total mining time: {time_elapsed(start_time, cur_time)}\n")
+                f"   Avg mining time: {time_elapsed(start_time, start_time + (cur_time - start_time) / coins_mined)}")
+            print(
+                f" Total mining time: {time_elapsed(start_time, cur_time)}")
+            print(" ------------------------------------------")
+            print(f"\t    Reward: {data['reward']:.17f} LC")
+            print(f" Total coins mined: {coins_mined:.17f} LC\n")
 
         prev_time = cur_time

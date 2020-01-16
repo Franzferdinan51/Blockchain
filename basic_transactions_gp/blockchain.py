@@ -60,6 +60,9 @@ class Blockchain(object):
         if self.blocks_mined > NEXT_INCREASE_THRESHOLD:
             DIFFICULTY += 1
             NEXT_INCREASE_THRESHOLD = int(2 ** (DIFFICULTY*RAMP_FACTOR))
+            # Recalculate reward
+            REWARD = DIFFICULTY ** 3 / 216.0
+
         # Return the new block
         return block
 
