@@ -22,8 +22,8 @@ const Users = ({ user, users, isLoaded }) => {
 				setSelected('No users found');
 			} else if (users.length) {
 				setSelected('Choose a user');
-				setUserList(filterUsers(users, user));
 			}
+			setUserList(filterUsers(users, user));
 		},
 		[ user, users, isLoaded ]
 	);
