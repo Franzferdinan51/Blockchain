@@ -6,8 +6,11 @@ from uuid import uuid4
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-# Current difficulty
-DIFFICULTY = 6
+# Current difficulty, adaptive. Increases as more blocks are mined.
+DIFFICULTY = 1
+RAMP_FACTOR = 1.25  # How quickly to ramp up the difficulty
+NEXT_INCREASE_THRESHOLD = 2  # Formula: int(2 ** (DIFFICUULTY * RAMP_FACTOR))
+
 # 1 coin for difficulty 6, increasing with difficulty
 REWARD = DIFFICULTY ** 3 / 216.0
 
@@ -16,6 +19,7 @@ class Blockchain(object):
     def __init__(self):
         self.chain = []
         self.current_transactions = []
+        self.blocks_mined = 1
 
         # Create the genesis block
         self.new_block(previous_hash='================', proof=100)
@@ -36,6 +40,8 @@ class Blockchain(object):
         :return: <dict> New Block
         """
 
+        global DIFFICULTY, RAMP_FACTOR, NEXT_INCREASE_THRESHOLD
+
         block = {
             'index': len(self.chain) + 1,
             'timestamp': time(),
@@ -48,6 +54,12 @@ class Blockchain(object):
         self.current_transactions = []
         # Append the chain to the block
         self.chain.append(block)
+        # Increase block count
+        self.blocks_mined += 1
+        # Increase difficulty if we've passed the current threshold and update threshhold
+        if self.blocks_mined > NEXT_INCREASE_THRESHOLD:
+            DIFFICULTY += 1
+            NEXT_INCREASE_THRESHOLD = int(2 ** (DIFFICULTY*RAMP_FACTOR))
         # Return the new block
         return block
 

@@ -4,7 +4,8 @@ import requests
 import sys
 import json
 
-from time import time
+import time
+from spinner import Spinner
 
 
 def time_elapsed(start, end):
@@ -24,8 +25,9 @@ def proof_of_work(block, difficulty):
 
     block_string = json.dumps(block, sort_keys=True)
     proof = 0
-    while valid_proof(block_string, proof, difficulty) is False:
-        proof += 1
+    with Spinner():
+        while valid_proof(block_string, proof, difficulty) is False:
+            proof += 1
 
     return proof
 
@@ -61,9 +63,10 @@ if __name__ == '__main__':
     print("ID is", id)
     f.close()
 
-    start_time = time()
+    start_time = time.time()
     prev_time = start_time
     coins_mined = 0
+
     # Run forever until interrupted
     while True:
         r = requests.get(url=node + "/last_block")
@@ -76,6 +79,9 @@ if __name__ == '__main__':
             print(r)
             break
 
+        # Output current difficulty
+        print(
+            f"Current difficulty: {data['difficulty']} Mining...", end=" ", flush=True)
         # Get the block from `data` and use it to look for a new proof
         new_proof = proof_of_work(data['block'], data['difficulty'])
 
@@ -94,10 +100,15 @@ if __name__ == '__main__':
             print(r)
             break
 
-        cur_time = time()
+        cur_time = time.time()
         if data['success']:
             coins_mined += data['reward']
-            print(f"{data['message']}\nTotal coins mined: {coins_mined}")
+            # Backspace over 'Mining...'
+            print(
+                "\u001b[1D" * 10, end="")
+            # Output current stats
+            print(
+                f"{data['message']}\nTotal coins mined: {coins_mined}")
             print(f" Last mining time: {time_elapsed(prev_time, cur_time)}")
             print(
                 f"  Avg mining time: {time_elapsed(start_time, start_time + (cur_time - start_time) / coins_mined)}")
