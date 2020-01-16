@@ -18,8 +18,8 @@ const App = (props) => {
 			.then((res) => {
 				console.log('Loading...');
 				let trans = {};
-				res.data.chain.map((block) => {
-					block.transactions.map((t) => {
+				res.data.chain.forEach((block) => {
+					block.transactions.forEach((t) => {
 						trans[t.recipient] = trans[t.recipient] ? [ ...trans[t.recipient], t ] : [ t ];
 						trans[t.sender] = trans[t.sender] ? [ ...trans[t.sender], t ] : [ t ];
 					});
@@ -30,7 +30,9 @@ const App = (props) => {
 
 				console.log('Finished loading');
 			})
-			.catch((err) => {});
+			.catch((err) => {
+				setIsLoaded(true);
+			});
 	}, []);
 
 	return (
