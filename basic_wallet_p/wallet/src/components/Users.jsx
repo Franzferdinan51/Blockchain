@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, withRouter, useParams } from 'react-router-dom';
 import { Menu, Dropdown, Icon, Button, Modal, Input } from 'antd';
 
 const Users = (props) => {
-	const { user, users, isLoaded } = props;
+	const { user } = useParams();
+	const { users, isLoaded } = props;
 	const [ selected, setSelected ] = useState('Loading...');
 	const [ userList, setUserList ] = useState([]);
 	const [ visible, setVisible ] = useState(false);

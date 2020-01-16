@@ -3,20 +3,22 @@ import { withRouter, Route, Switch } from 'react-router-dom';
 import axios from 'axios';
 
 import Users from './components/Users';
+import Ledger from './components/Ledger';
 
-import { PageHeader, Pagination } from 'antd';
+import { PageHeader } from 'antd';
 import 'antd/dist/antd.css';
 
 const App = (props) => {
 	const [ isLoaded, setIsLoaded ] = useState(false);
 	const [ users, setUsers ] = useState([]);
-	const [ transactions, setTransactions ] = useState({});
+	const [ transactions, setTransactions ] = useState([]);
 
 	useEffect(() => {
 		axios
 			.get('http://0.0.0.0:5000/chain')
 			.then((res) => {
 				console.log('Loading...');
+
 				let trans = {};
 				res.data.chain.forEach((block) => {
 					block.transactions.forEach((t) => {
@@ -25,6 +27,7 @@ const App = (props) => {
 					});
 				});
 
+				setTransactions(trans);
 				setUsers(Object.keys(trans).filter((sender) => sender !== '0'));
 				setIsLoaded(true);
 
@@ -38,18 +41,16 @@ const App = (props) => {
 	return (
 		<div className='App'>
 			<Switch>
-				<Route
-					path='/:id?'
-					render={(props) => (
-						<PageHeader
-							style={{
-								border: '1px solid rgb(235, 237, 240)'
-							}}
-							title='LambdaWallet'
-							subTitle={<Users user={props.match.params.id} users={users} isLoaded={isLoaded} />}
-						/>
-					)}
-				/>
+				<Route path='/:user?'>
+					<PageHeader
+						style={{
+							border: '1px solid rgb(235, 237, 240)'
+						}}
+						title='LambdaWallet'
+						subTitle={<Users user={props.match.params.id} users={users} isLoaded={isLoaded} />}
+					/>
+					<Ledger transactions={transactions} />
+				</Route>
 			</Switch>
 		</div>
 	);
