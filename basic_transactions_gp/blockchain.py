@@ -40,7 +40,7 @@ class Blockchain(object):
         :return: <dict> New Block
         """
 
-        global DIFFICULTY, RAMP_FACTOR, NEXT_INCREASE_THRESHOLD
+        global DIFFICULTY, RAMP_FACTOR, NEXT_INCREASE_THRESHOLD, REWARD
 
         block = {
             'index': len(self.chain) + 1,
@@ -62,6 +62,9 @@ class Blockchain(object):
             NEXT_INCREASE_THRESHOLD = int(2 ** (DIFFICULTY*RAMP_FACTOR))
             # Recalculate reward
             REWARD = DIFFICULTY ** 3 / 216.0
+            print(
+                f"Difficulty: {DIFFICULTY} Reward: {REWARD} Next threshold: {NEXT_INCREASE_THRESHOLD}")
+            print(f"Blocked mined: {self.blocks_mined}")
 
         # Return the new block
         return block
