@@ -4,6 +4,7 @@ from time import time
 from uuid import uuid4
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 # Current difficulty
 DIFFICULTY = 6
@@ -144,6 +145,7 @@ class Blockchain(object):
 
 # Instantiate our Node
 app = Flask(__name__)
+CORS(app)
 # app.run(debug=True)
 
 # Generate a globally unique address for this node

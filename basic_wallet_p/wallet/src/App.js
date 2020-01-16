@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { withRouter, Route, Switch } from 'react-router-dom';
+import axios from 'axios';
 
 import Users from './components/Users';
 
@@ -7,48 +8,43 @@ import { PageHeader, Pagination } from 'antd';
 import 'antd/dist/antd.css';
 
 const App = (props) => {
-	const [ isLoaded, setIsLoaded ] = useState(true);
-	const [ users, setUsers ] = useState([ 'bob', 'erin', 'alice' ]);
+	const [ isLoaded, setIsLoaded ] = useState(false);
+	const [ users, setUsers ] = useState([]);
+	const [ transactions, setTransactions ] = useState({});
 
-	// useEffect(
-	// 	() => {
-	// 		setUser(props.match.params.id);
-	// 	},
-	// 	[ props.match.params.id ]
-	// );
+	useEffect(() => {
+		axios
+			.get('http://0.0.0.0:5000/chain')
+			.then((res) => {
+				console.log('Loading...');
+				let trans = {};
+				res.data.chain.map((block) => {
+					block.transactions.map((t) => {
+						trans[t.recipient] = trans[t.recipient] ? [ ...trans[t.recipient], t ] : [ t ];
+						trans[t.sender] = trans[t.sender] ? [ ...trans[t.sender], t ] : [ t ];
+					});
+				});
+
+				setUsers(Object.keys(trans).filter((sender) => sender !== '0'));
+				setIsLoaded(true);
+
+				console.log('Finished loading');
+			})
+			.catch((err) => {});
+	}, []);
 
 	return (
 		<div className='App'>
 			<Switch>
-				<Route path='/' exact>
-					<PageHeader
-						style={{
-							border: '1px solid rgb(235, 237, 240)'
-						}}
-						title='LambdaWallet'
-					/>
-				</Route>
 				<Route
-					path='/wallet/:id?'
+					path='/:id?'
 					render={(props) => (
 						<PageHeader
 							style={{
 								border: '1px solid rgb(235, 237, 240)'
 							}}
-							onBack={() => props.history.push('/')}
 							title='LambdaWallet'
 							subTitle={<Users user={props.match.params.id} users={users} isLoaded={isLoaded} />}
-						/>
-					)}
-				/>
-				<Route
-					render={(props) => (
-						<PageHeader
-							style={{
-								border: '1px solid rgb(235, 237, 240)'
-							}}
-							onBack={() => props.history.push('/')}
-							title='Page Not Found'
 						/>
 					)}
 				/>
