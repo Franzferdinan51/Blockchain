@@ -35,20 +35,19 @@ const Ledger = ({ transactions }) => {
 											<Moment fromNow>{timestamp * 1000}</Moment>
 										</strong>
 									</div>
-									<div className='field'>
-										<strong>From:</strong> {sender}
-									</div>
-									<div className='field'>
-										<strong>To:</strong> {recipient}
-									</div>
 									{recipient === user ? (
-										<div className='field receiver'>
-											<strong>Amount:</strong> +{amount}
+										<div className='field'>
+											<strong>From:</strong> {sender}
 										</div>
 									) : (
-										<div className='field sender'>
-											<strong>Amount:</strong> -{amount}
+										<div className='field'>
+											<strong>To:</strong> {recipient}
 										</div>
+									)}
+									{recipient === user ? (
+										<div className='field receiver'>+{amount}</div>
+									) : (
+										<div className='field sender'>-{amount}</div>
 									)}
 								</div>
 							);

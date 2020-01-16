@@ -30,14 +30,19 @@
 
 			.field {
 				width: 25%;
+				&:nth-child(2) {
+					text-align: center;
+				}
 			}
 		}
 		.receiver {
 			color: green;
+			text-align: right;
 		}
 
 		.sender {
 			color: red;
+			text-align: right;
 		}
 	}
 }
